@@ -82,7 +82,11 @@ export function Timeline(props: {
     return [...map.entries()];
   }, [visible]);
 
-  const viewerItems: ViewerItem[] = visible.map((t) => ({ record: t.record, albumKey: t.album.key }));
+  const viewerItems: ViewerItem[] = visible.map((t) => ({
+    record: t.record,
+    albumKey: t.album.key,
+    guarded: t.album.kind === 'spicy',
+  }));
 
   return (
     <div className="album-view timeline">

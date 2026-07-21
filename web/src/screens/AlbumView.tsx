@@ -356,7 +356,7 @@ export function AlbumView(props: {
 
       {openIdx !== null && albumKey && (
         <Viewer
-          items={visible.map((p) => ({ record: p.record, albumKey }))}
+          items={visible.map((p) => ({ record: p.record, albumKey, guarded: spicy }))}
           startIndex={openIdx}
           viewerId={props.viewerId}
           viewerEmail={props.viewerEmail}

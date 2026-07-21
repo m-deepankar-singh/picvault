@@ -82,7 +82,31 @@ export function App() {
     setOpenAlbum(null);
   }
 
+  // Phone-only: PicVault refuses to open on desktops. (A determined person
+  // can fake a phone; this is a policy gate, not a security boundary — the
+  // security boundary is the encryption.) Dev mode is exempt for local work.
+  const isPhone =
+    import.meta.env.DEV ||
+    navigator.maxTouchPoints > 1 ||
+    /Android|iPhone|Mobile/i.test(navigator.userAgent);
+
   if (!ready) return null;
+
+  if (!isPhone) {
+    return (
+      <div className="app">
+        <div className="auth-screen">
+          <p className="eyebrow">A private edition · encrypted on your device</p>
+          <h1>PicVault</h1>
+          <p className="tagline">
+            This album only opens on a phone.
+            <br />
+            Open your private link on your phone's browser instead.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const spicy = openAlbum?.kind === 'spicy';
   const appClass = `app${hidden ? ' blurred' : ''}${spicy ? ' after-dark' : ''}`;

@@ -9,6 +9,10 @@ import { SecureImage } from './SecureImage';
 export interface ViewerItem {
   record: TimelinePhoto;
   albumKey: Uint8Array;
+  /** Hold-to-view: media stays blurred except while a finger is held down.
+   *  The web cannot detect screenshots, so instead we make them nearly
+   *  impossible to take one-handed. Used for after-dark albums. */
+  guarded?: boolean;
 }
 
 const REACTIONS = ['❤️', '😂', '😮', '🥺', '🔥'];
@@ -45,6 +49,7 @@ export function Viewer(props: {
   const [comment, setComment] = useState('');
   const [captionDraft, setCaptionDraft] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [holding, setHolding] = useState(false);
   const touchStart = useRef<number | null>(null);
 
   const item = props.items[index];
@@ -126,16 +131,25 @@ export function Viewer(props: {
   return (
     <div className="viewer" role="dialog" aria-label="Photo viewer">
       <div
-        className="viewer-stage"
-        onPointerDown={(e) => (touchStart.current = e.clientX)}
+        className={item.guarded && !holding ? 'viewer-stage guard-blur' : 'viewer-stage'}
+        onPointerDown={(e) => {
+          touchStart.current = e.clientX;
+          setHolding(true);
+        }}
         onPointerUp={(e) => {
+          setHolding(false);
           if (touchStart.current === null) return;
           const dx = e.clientX - touchStart.current;
           touchStart.current = null;
           if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
         }}
+        onPointerCancel={() => setHolding(false)}
+        onPointerLeave={() => setHolding(false)}
         onDoubleClick={() => setZoomed(!zoomed)}
       >
+        {item.guarded && !holding && !loading && (
+          <p className="guard-hint">hold to view</p>
+        )}
         {loading && <p className="viewer-loading">decrypting…</p>}
         {error && <p className="error">{error}</p>}
         {videoUrl && (
