@@ -1,0 +1,7 @@
+{
+  "name": "@picvault/shared",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/api-types.ts",
+  "types": "src/api-types.ts"
+}
